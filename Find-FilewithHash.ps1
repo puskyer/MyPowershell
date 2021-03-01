@@ -30,9 +30,7 @@ $FileExtenions = @(
 #>
 
 #$RootDIR = "G:\Pictures\"
-$RootDIR = "F:\Jacinthe\Videos\"
-$date2015 = " (2015_10_12 00_33_51 UTC)"
-$date2016 = " (2016_08_13 18_00_38 UTC)"
+$RootDIR = "J:\Jacinthe\Videos\"
 $fileExt = ".*"
 $dateStr3 = "UTC)"
 $mypath = $RootDIR+"*"+$dateStr3+$fileExt
@@ -53,18 +51,51 @@ $StateRenamed = "Renamed"
 
 $Objs = Get-ChildItem $mypath -Recurse
 
+$dataArray= [System.Collections.ArrayList]::new()
+$dates = [System.Collections.ArrayList]::new()
+
+$Objs | ForEach-Object { 
+
+    $ObjDir = $_.DirectoryName+"\"
+    $Objfile = ($_.Name).trim()
+    $fileExt = ($_.Extension).trim()
+
+    $Obj = $Objfile.split("(",2)
+    $stg = '"('+($Obj[1]).Replace($fileExt,"")+'"'
+    $null = $dataArray.add("$stg")
+
+}
+
+$dataArray | Select-Object -Unique | ForEach-Object { 
+
+    if (($_ -match '(201[0-9]_[0-9][0-9]_[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] UTC)')) { $null = $dates.add($_)}
+
+}
 
 $Objs | ForEach-Object {
 
     $ObjDir = $_.DirectoryName+"\"
     $Objfile = ($_.Name).trim()
-    #$fileExt = ($_.Extension).trim()
-    #$ObjBaseName = (($Objfile.split('('))[0]).trim()+$fileExt
+    $fileExt = ($_.Extension).trim()
+    $FileBaseName = ($_.Basename).trim()
+    $Obj = $Objfile.split("(",2)
+    $stg = '"('+($Obj[1]).Replace($fileExt,"")+'"'
+
+    $dates | ForEach-Object {
+        $stg = $_.trim('"')
+
+        if ( $FileBaseName -match $stg ) {
+            $ObjBaseName = ($FileBaseName.Replace($stg,"")).trim()+$fileExt
+        }
+    } 
+    <#
     if ($Objfile.Contains($date2015)) {
         $ObjBaseName = ($Objfile).replace($date2015,"")
     } elseif ($Objfile.Contains($date2016))  {
         $ObjBaseName = ($Objfile).replace($date2016,"")
     }
+    #>
+
     if ((get-location).Path+"\" -ne $ObjDir) { 
         Set-Location $ObjDir 
         Write-Host("Working Directory is """+$ObjDir+""" File is """+$Objfile+"""")
