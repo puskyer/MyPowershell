@@ -30,9 +30,9 @@ $FileExtenions = @(
 #>
 
 #$RootDIR = "G:\Pictures\"
-$RootDIR = "J:\Jacinthe\Videos\"
+$RootDIR = "D:\RICCIOCAST\Data\"
 $fileExt = ".*"
-$dateStr3 = "UTC)"
+$dateStr3 = '(201[0-9]_[0-9][0-9]_[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] UTC)'
 $mypath = $RootDIR+"*"+$dateStr3+$fileExt
 
 Set-Location $RootDIR
@@ -56,12 +56,19 @@ $dates = [System.Collections.ArrayList]::new()
 
 $Objs | ForEach-Object { 
 
-    $ObjDir = $_.DirectoryName+"\"
+    #$ObjDir = $_.DirectoryName+"\"
     $Objfile = ($_.Name).trim()
     $fileExt = ($_.Extension).trim()
 
-    $Obj = $Objfile.split("(",2)
-    $stg = '"('+($Obj[1]).Replace($fileExt,"")+'"'
+    $Obj = $Objfile.split("(")
+    
+    $Obj | ForEach-Object {    
+       if ( $_ -cmatch '(201[0-9]_[0-9][0-9]_[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] UTC)') {
+        $stg = '"('+($_).Replace($fileExt,"")+'"'
+
+       }
+    }
+        
     $null = $dataArray.add("$stg")
 
 }
@@ -78,8 +85,8 @@ $Objs | ForEach-Object {
     $Objfile = ($_.Name).trim()
     $fileExt = ($_.Extension).trim()
     $FileBaseName = ($_.Basename).trim()
-    $Obj = $Objfile.split("(",2)
-    $stg = '"('+($Obj[1]).Replace($fileExt,"")+'"'
+    #$Obj = $Objfile.split("(",2)
+    #$stg = '"('+($Obj[1]).Replace($fileExt,"")+'"'
 
     $dates | ForEach-Object {
         $stg = $_.trim('"')
@@ -88,13 +95,6 @@ $Objs | ForEach-Object {
             $ObjBaseName = ($FileBaseName.Replace($stg,"")).trim()+$fileExt
         }
     } 
-    <#
-    if ($Objfile.Contains($date2015)) {
-        $ObjBaseName = ($Objfile).replace($date2015,"")
-    } elseif ($Objfile.Contains($date2016))  {
-        $ObjBaseName = ($Objfile).replace($date2016,"")
-    }
-    #>
 
     if ((get-location).Path+"\" -ne $ObjDir) { 
         Set-Location $ObjDir 
@@ -126,7 +126,7 @@ $Objs | ForEach-Object {
         }
     } else {
         Write-Host('"'+$ObjBaseName+'" Does not exist! Renaming "'+$ObjDir+$Objfile+'" to "'+$ObjDir+$ObjBaseName+'"')
-        #Write-Host(($Hashfile).Path+" would be renamed to "+$ObjBaseName)
+        #Write-Host(($ObjDir+$Objfile)+" would be renamed to "+$ObjBaseName)
         Rename-Item -Path ($ObjDir+$Objfile) -NewName $ObjBaseName -Verbose
         $NoExist_Count +=1
         $state = $StateRenamed
