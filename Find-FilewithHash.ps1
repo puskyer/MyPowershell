@@ -29,8 +29,7 @@ $FileExtenions = @(
 )
 #>
 
-#$RootDIR = "G:\Pictures\"
-$RootDIR = "D:\RICCIOCAST\Data\"
+$RootDIR = "D:\Documents\"
 $fileExt = ".*"
 $dateStr3 = '(201[0-9]_[0-9][0-9]_[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] UTC)'
 $mypath = $RootDIR+"*"+$dateStr3+$fileExt
