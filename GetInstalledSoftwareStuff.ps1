@@ -1,0 +1,4 @@
+﻿Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object Publisher,DisplayName,DisplayVersion,EstimatedSize,InstallDate | Export-Csv f:\Windows_installed.list 
+Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object Publisher,DisplayName,DisplayVersion,EstimatedSize,InstallDate | Export-Csv f:\Windows_installed.list -Append
+Get-AppxPackage -User pasqu | Select Name,PackageFullName | Export-Csv f:\Windows_installed_AppxPackage.list
+Get-AppxPackage -User pusky | Select Name,PackageFullName | Export-Csv f:\Windows_installed_AppxPackage.list -Append
